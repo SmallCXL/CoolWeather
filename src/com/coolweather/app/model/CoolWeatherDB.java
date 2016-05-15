@@ -9,7 +9,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
+/*
+ * 本类用来帮助操作数据库的存储与读取
+ */
 public class CoolWeatherDB {
 
 	/*
