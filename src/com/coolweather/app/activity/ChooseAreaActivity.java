@@ -34,6 +34,7 @@ public class ChooseAreaActivity extends Activity {
 	public static final int CITY = 1;
 	public static final int COUNTY = 2;
 	
+	private boolean isFromWeatherActivity;
 	private ProgressDialog progressDialog;
 	private TextView titleText;
 	private ListView listView;
@@ -60,8 +61,10 @@ public class ChooseAreaActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+		
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ChooseAreaActivity.this);
-		if(pref.getBoolean("city_seleted", false)){
+		if((pref.getBoolean("city_seleted", false)) && !isFromWeatherActivity){
 			Intent intent = new Intent(this,WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -264,7 +267,11 @@ public class ChooseAreaActivity extends Activity {
 			queryProvinces();
 		}
 		else if(currentLevel == PROVINCE){
-			finish();
+			if(isFromWeatherActivity){
+				Intent intent = new Intent(this,WeatherActivity.class);
+				startActivity(intent);
+			}
+			finish();		
 		}
 	}
 	
