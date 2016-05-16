@@ -14,7 +14,10 @@ import com.example.coolweather.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -48,7 +51,6 @@ public class ChooseAreaActivity extends Activity {
 	 */
 	private Province seletedProvince;
 	private City seletedCity;
-	private County seletedCounty;
 	
 	private int currentLevel = PROVINCE;
 	
@@ -57,6 +59,14 @@ public class ChooseAreaActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
+		
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ChooseAreaActivity.this);
+		if(pref.getBoolean("city_seleted", false)){
+			Intent intent = new Intent(this,WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return ;
+		}
 		
 		listView = (ListView)findViewById(R.id.list_view);
 		titleText = (TextView)findViewById(R.id.title_text);
@@ -79,13 +89,20 @@ public class ChooseAreaActivity extends Activity {
 					seletedCity = cityList.get(index);
 					queryCounties();					
 				}
+				else if(currentLevel == COUNTY){
+					Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+					String countyCode = countyList.get(index).getCountyCode();
+					intent.putExtra("county_code", countyCode);
+					
+					//Toast.makeText(ChooseAreaActivity.this, countyCode, Toast.LENGTH_SHORT).show();
+					startActivity(intent);
+					finish();
+				}
 			}
 		});
-		
-		
 	}
 /*
- * 以下三个方法将从数据库中加载相关天气的数据
+ * 以下三个方法将从数据库中加载相关城市信息
  */
 	private void queryProvinces() {
 		// TODO Auto-generated method stub
@@ -141,7 +158,7 @@ public class ChooseAreaActivity extends Activity {
 		}		
 	}
 /*
- *  在数据库中找不到相关数据或者第一次加载，则调用queryFromServer方法从网络上下载天气数据
+ *  在数据库中找不到相关数据或者第一次加载，则调用queryFromServer方法从网络上下载城市数据
  */
 	private void queryFromServer(final String code, final String type) {
 		// TODO Auto-generated method stub
@@ -187,7 +204,7 @@ public class ChooseAreaActivity extends Activity {
 							else if(type.equals("county")){
 								queryCounties();
 							}
-							closeProgressDialog();
+							closeProgressDialog();//下载完成，关闭提示框
 						}//end run
 					});//end runOnUiThread
 				}//end if(result)
